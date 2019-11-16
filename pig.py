@@ -4,4 +4,4 @@ from PIL import Image
 
 from Generator import Generator
 
-from noise import *
+import Layers

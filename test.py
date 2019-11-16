@@ -1,15 +1,18 @@
-from pig import Generator, AdditiveNoise, GaussianNoise
+import numpy as np
+from PIL import Image
+from pprint import pprint
+from pig import *
+from Layers import *
 
 if __name__ == '__main__':
+
 	# создаем генератор
 	gen = Generator()
 
-	# первый слой - +белый шум
-	gen.add('add', AdditiveNoise)
-	# второй слой - *2*гауссовсикй шум
-	gen.add('multiply', GaussianNoise, {'loc': 1}, coef=2)
-	# третий слой - *белый шум
-	gen.add('multiply', AdditiveNoise)
-
-	# генератор может создавать изображения
+	# задаем слои генератора
+	gen.add('add', SimplexNoise, args={'x_size':50, 'y_size':50})
+	gen.add('fit', BinFilter, args={'threshold':0.5})
+	gen.add('fit', CellarAutomate, args={'loops':1, 'nbs_to_die':8})
+	
+	# генерируем изображение
 	gen.createImage(500,500)
