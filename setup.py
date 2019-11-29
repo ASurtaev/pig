@@ -1,9 +1,7 @@
 from setuptools import setup, find_packages
-from os.path import join, dirname
 
-setup(
-    name='pig',
-    version='0.0',
-    packages=find_packages(),
-    long_description=open(join(dirname(__file__), 'README.md')).read(),
-)
+setup(name='pig',
+      version='0.0',
+      url='https://github.com/Perfectrum/pig',
+      packages=find_packages(),
+     )

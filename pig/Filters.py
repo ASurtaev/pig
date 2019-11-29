@@ -1,8 +1,5 @@
+# -*- coding: utf-8 -*-
 import numpy as np
-
-from Noise import *
-
-from CellarAutomate import CellarAutomate
 
 #########################################
 # Функция, сводящая масстив к бинарному #
