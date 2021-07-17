@@ -2,20 +2,15 @@
 import numpy as np
 from opensimplex import OpenSimplex
 
-#####################################
 # Обертка аддитивного шума из numpy #
-#####################################
 def AdditiveNoise(x, y, args={}):
 	return np.random.random((x, y))
 
-#####################################
 # Обертка нормального шума из numpy #
-#####################################
 def GaussianNoise(x, y, args={'loc':0, 'scale':None}):
 	args['size'] = (x,y)
 	return np.random.normal(**args)
 
-##################################
 # Симплексный шум из opensimplex #
 #####################################
 # В будущем хотелос бы конечно свою #

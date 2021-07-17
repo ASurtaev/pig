@@ -1,69 +1,39 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from PIL import Image
+from pig.Layer import Layer
 
 class Generator():
-	layers = []
-	
-	#######################################
-	# метод для добавления слоя генератора#
-	#######################################
+
+	def __init__(self, x=1, y=1):
+		self.shape = (x, y)
+		self._layers = []
+		self._result = np.zeros(self.shape)
+
 	# при добавлении слоя методу передается 4 аргумента:
 	# - mode - "режим" слоя. Сейчас есть два режима:
 	# -- add - результат работы слоя прибавляется к текущему результату
-	# -- multiply - результат работы слоя умножается на текущий результат
+	# -- mult - результат работы слоя умножается на текущий результат
 	# -- fit - слой обрабатывает конкретный массив, который и передается на вход, coef при этом игнорируется
 	# - coef - коэффициент, на который умножается результат работы слоя перед применением
 	# - func - сама функция слоя, вида f(x, y, {дополнительные аргументы})
 	# - args - словарь, дополнительных аргументов функции слоя
-	def add(self, mode, func, args={}, coef=1):
-		self.layers.append({'mode': mode,
-							'coef': coef,
-							'func': func,
-							'args': dict(args)})
+	def add_layer(self, mode, func, coef=1, **kwargs):
+		new_layer = Layer(mode, func, coef, **kwargs)
+		self._layers.append(new_layer)
 
-	###########################################################	
-	# метод, генерирующий результат в виде numpy массива (x,y)#
-	###########################################################
-	def generate(self, x, y):
+	def show_layers_info(self):
+		for layer in self._layers:
+			print(layer)
 
-		# создаем массив требуемого размера, состоящий из нулей
-		data = np.zeros((x,y))
+	def remove_layer(self, index):
+		self._layers.pop(index)
 
-		# последовательно применяем слои из массива layers в соответствии с "режимом"
-		# try:
-		for layer in self.layers:
-			if layer['mode'] == 'add':
-				data+= layer['coef']*layer['func'](x, y, layer['args'])
-			if layer['mode'] == 'multiply':
-				data*= layer['coef']*layer['func'](x, y, layer['args'])
-			if layer['mode'] == 'fit':
-				data = layer['func'](data, layer['args'])
-		#возвращаем результат
-		return data
-		# except TypeError:
-		# 	print('Ошибка: невозможно применить {layer} в режиме {mode}'.format(layer = layer['func'], mode = layer['mode']))
-		# 	return data
+	def generate(self):
+		for layer in self._layers:
+			self._result = layer.call_function(self._result, self.shape)
 
-	################################################
-	# метод, преобразующий результат в изображение #
-	################################################
-	# (x,y) - размеры изображения (х,у)
-	# save - пусть для сохранения или None, если сохранять не нужно
-	# show - True, если нужно вывести изображение на экран, иначе False
-	def createImage(self, x, y, save=None, show=True):
-		# генерируем результат в виде массива
-		data = self.generate(x, y)
+	def get_result(self):
+		return self._result
 
-		# превращаем масссив в изображение
-		image = Image.fromarray(data*255)
-
-		# выводим изображение на экран
-		if show:
-			image.show()
-
-		# сохраняем изображение, если указан путь save
-		if save:
-			image.save(save)
-
-		return image
+	def change_size(self, x, y):
+		self._result = np.zeros((x, y))
