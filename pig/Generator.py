@@ -1,25 +1,44 @@
 # -*- coding: utf-8 -*-
-import numpy as np
 from pig.Layer import Layer
+from pig.BasicInteractions import continuation
+from typing import List
 
-class Generator():
 
-	def __init__(self, x=1, y=1):
-		self.shape = (x, y)
-		self._layers = []
-		self._result = np.zeros(self.shape)
+class Generator:
+	def __init__(self, automate=True):
+		self._layers: List[Layer] = []
+		self._interactions = []
 
-	# при добавлении слоя методу передается 4 аргумента:
-	# - mode - "режим" слоя. Сейчас есть два режима:
-	# -- add - результат работы слоя прибавляется к текущему результату
-	# -- mult - результат работы слоя умножается на текущий результат
-	# -- fit - слой обрабатывает конкретный массив, который и передается на вход, coef при этом игнорируется
-	# - coef - коэффициент, на который умножается результат работы слоя перед применением
-	# - func - сама функция слоя, вида f(x, y, {дополнительные аргументы})
-	# - args - словарь, дополнительных аргументов функции слоя
-	def add_layer(self, mode, func, coef=1, **kwargs):
-		new_layer = Layer(mode, func, coef, **kwargs)
+		self.automate = automate
+		self.last_layer = None
+
+		self._result = [[]]
+
+	def add_data(self, data):
+		self._result = data
+
+	def add_layer(self, layer_func, data=None, interaction_func=continuation, **kwargs):
+		new_layer = Layer(layer_func, **kwargs)
+		if data:
+			new_layer.set_data(data)
+		else:
+			new_layer.set_empty_data(len(self._result), len(self._result[0]))
 		self._layers.append(new_layer)
+		self._interactions.append(interaction_func)
+		if self.automate:
+			self.apply_layer()
+
+	def apply_layer(self):
+		if self._layers:
+			# It is first layer or the func is continuation
+			if self._interactions[-1] is None or self._interactions[-1] == continuation:
+				self._layers[-1].set_data(self._result)
+				self._layers[-1].call_function()
+				self._result = self._layers[-1].get_data()
+			# all the other funcs have the same interface
+			else:
+				self._layers[-1].call_function()
+				self._result = self._interactions[-1](self._result, self._layers[-1].get_data())
 
 	def show_layers_info(self):
 		for layer in self._layers:
@@ -30,10 +49,7 @@ class Generator():
 
 	def generate(self):
 		for layer in self._layers:
-			self._result = layer.call_function(self._result, self.shape)
+			layer.call_function()
 
 	def get_result(self):
 		return self._result
-
-	def change_size(self, x, y):
-		self._result = np.zeros((x, y))
