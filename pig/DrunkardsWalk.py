@@ -1,10 +1,11 @@
-import numpy as np
 import random
 
-class arrayPosition:
+
+class ArrayPosition:
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
+
 
 def get_possible_directions(position, length, width, prev_dir):
 	directions = ['u', 'd', 'r', 'l']
@@ -21,8 +22,7 @@ def get_possible_directions(position, length, width, prev_dir):
 		try:
 			if prev_dir == 'u':
 				directions.remove('d')
-			elif prev_dir == 'd':
-				directions.remove('u')
+			elif prev_dir == 'd':				directions.remove('u')
 			elif prev_dir == 'r':
 				directions.remove('l')
 			else:
@@ -30,17 +30,18 @@ def get_possible_directions(position, length, width, prev_dir):
 		except:
 			pass
 
-
 	return directions
 
-def DrunkardsWalk(shape, steps = 50, big_rooms = True, start = (0, 0)):
 
-	length, width = shape[0], shape[1]
+def drunkards_walk(data, steps=50, big_rooms=True, start=(0, 0)):
+	#length, width = shape[0], shape[1]
 
-	data = [[0 for _ in range(length)] for _ in range(width)]
+	#data = [[0 for _ in range(length)] for _ in range(width)]
+	length = len(data)
+	width = len(data[0])
 	data[start[0]][start[1]] = 255
 
-	position = arrayPosition(start[0], start[1])
+	position = ArrayPosition(start[0], start[1])
 	prev_dir = None
 
 	for _ in range(steps):
@@ -57,7 +58,6 @@ def DrunkardsWalk(shape, steps = 50, big_rooms = True, start = (0, 0)):
 			position.x += 1
 
 		data[position.x][position.y] = 255
-
 
 	return data
 
