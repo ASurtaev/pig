@@ -1,36 +1,28 @@
-class Layer():
-    def __init__(self, mode, func, coef, **kwargs):
-        self.mode = mode
-        self.coef = coef
+class Layer:
+    def __init__(self, func, **kwargs):
         self.func = func
 
-        self.kwargs = kwargs
+        self._kwargs = kwargs
 
-        self.data = None
+        self._data = None
 
-    def call_function(self, result, shape):
-        data = self.func(shape, **self.kwargs)
-        self.data = data
-        if self.mode == 'add':
-            data = result + data * self.coef
-        elif self.mode == 'mult':
-            data = result * data * self.coef
-        elif self.mode == 'fit':
-            pass
-        else:
-            print('Layer mode exception')
-            data = result
-        return data
+    def get_data(self):
+        return self._data
 
-    def update_settings(self, mode=None, func=None, coef=None, **kwargs):
-        if mode:
-            self.mode = mode
-        if coef:
-            self.coef = coef
+    def set_data(self, data):
+        self._data = data
+
+    def set_empty_data(self, length, width):
+        self._data = [[0 for _ in range(length)] for _ in range(width)]
+
+    def call_function(self):
+        self._data = self.func(self._data, **self._kwargs)
+
+    def update_settings(self, func=None, **kwargs):
         if func:
             self.func = func
         for key, value in kwargs.items():
-            self.kwargs[key] = value
+            self._kwargs[key] = value
 
     def __repr__(self):
-        return f'mode = {self.mode}, coef = {self.coef}, func = {self.func}, kwargs = {self.kwargs}'
+        return f'mode = func = {self.func}, kwargs = {self._kwargs}'
