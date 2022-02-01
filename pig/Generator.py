@@ -5,14 +5,16 @@ from typing import List
 
 
 class Generator:
-	def __init__(self, automate=True):
+	def __init__(self, data=None, automate=True):
 		self._layers: List[Layer] = []
 		self._interactions = []
 
 		self.automate = automate
 		self.last_layer = None
-
-		self._result = [[]]
+		if data:
+			self._result = data
+		else:
+			self._result = [[0]]
 
 	def add_data(self, data):
 		self._result = data
