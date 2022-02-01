@@ -1,19 +1,34 @@
 # pig
 
-Установка в режиме development (Linux): *git clone https://github.com/Perfectrum/pig && sudo python3 pig/setup.py build develop*
+Установка в режиме development (Linux): *git clone https://github.com/ASurtaev/pig && sudo python3 pig/setup.py build develop*
 
 
 Пример использования:
 
-    from pig import Generator, SimplexNoise, BinFilter, CellarAutomate
+    from pig.Generator import Generator
+    from pig.Functions.DrunkardsWalk import drunkards_walk
+    from pig.BasicInteractions import bit_or
+    
+    from PIL import Image
+    from numpy import asarray
+    
+    def test():
+        data = [[0 for _ in range(1000)] for _ in range(1000)]
+        gen = Generator(data=data)
+        gen.add_layer(drunkards_walk, steps=100000, start=(100, 100))
+        gen.add_layer(drunkards_walk, interaction_func=bit_or, steps=100000, start=(100, 100))
 
-    # создаем генератор
-    gen = Generator()
+        data_2 = [[0 for _ in range(1000)] for _ in range(1000)]
+        gen_2 = Generator(data=data_2)
+        gen_2.add_layer(drunkards_walk, steps=100000, start=(900, 900))
+        gen.add_layer(drunkards_walk, interaction_func=bit_or, steps=100000, start=(900, 900))
+    
+        gen.add_layer(None, data=gen_2.get_result(), interaction_func=bit_or)
 
-    # задаем слои генератора
-    gen.add('add', SimplexNoise, args={'x_size':50, 'y_size':50})
-    gen.add('fit', BinFilter, args={'threshold':0.5})
-    gen.add('fit', CellarAutomate, args={'loops':1, 'nbs_to_die':8})
-	
-    # генерируем изображение
-    gen.createImage(500,500)
+        img = asarray(gen.get_result())
+        img = Image.fromarray(img)
+        img.show()
+    
+    if __name__ == '__main__':
+        test()
+
