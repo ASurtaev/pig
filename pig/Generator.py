@@ -35,11 +35,13 @@ class Generator:
 			# It is first layer or the func is continuation
 			if self._interactions[-1] is None or self._interactions[-1] == continuation:
 				self._layers[-1].set_data(self._result)
-				self._layers[-1].call_function()
+				if self._layers[-1].func:
+					self._layers[-1].call_function()
 				self._result = self._layers[-1].get_data()
 			# all the other funcs have the same interface
 			else:
-				self._layers[-1].call_function()
+				if self._layers[-1].func:
+					self._layers[-1].call_function()
 				self._result = self._interactions[-1](self._result, self._layers[-1].get_data())
 
 	def show_layers_info(self):
