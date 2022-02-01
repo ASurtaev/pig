@@ -1,6 +1,6 @@
 # pig
 
-Установка в режиме development (Linux): *git clone https://github.com/Asurtaev/pig && sudo python3 pig/setup.py build develop*
+Установка в режиме development (Linux): *git clone https://github.com/ASurtaev/pig && sudo python3 pig/setup.py build develop*
 
 
 Пример использования:
